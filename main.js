@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let deferredPrompt;
   const installBtn = document.getElementById('installBtn');
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isStandalone =
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.navigator.standalone;
+
+if (isIOS && !isStandalone) {
+  installBtn?.classList.remove('hidden');
+}
 
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -17,12 +25,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   installBtn?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    installBtn?.classList.add('hidden');
-  });
+
+  if (isIOS) {
+    alert('Щоб встановити гру:\n\n1. Натисніть "Поділитися"\n2. Оберіть "На екран Додому"');
+    return;
+  }
+
+  if (!deferredPrompt) return;
+
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+
+  deferredPrompt = null;
+  installBtn?.classList.add('hidden');
+
+});
   const levelWheelEl = document.getElementById('levelWheel');
   const levelWheelModal = document.getElementById('levelWheelModal');
   const closeLevelWheelBtn = document.getElementById('closeLevelWheelBtn');
@@ -35,8 +52,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultMenuBtn = document.getElementById('resultMenuBtn');
   const nextLevelBtn = document.getElementById('nextLevelBtn');
   const retryLevelBtn = document.getElementById('retryLevelBtn');
+  const continueGameBtn = document.getElementById('continueGameBtn');
+  const continueGameBtnCoins = document.getElementById('continueGameBtnCoins');
 
-  nextLevelBtn?.addEventListener('click', async () => {
+continueGameBtnCoins?.addEventListener('click', () => {
+
+  const coinsMenu = document.querySelector('.coins-menu');
+  coinsMenu?.classList.remove('open');
+
+  continueGame();
+
+});
+const openSettingsFromGameBtn = document.getElementById('openSettingsFromGameBtn');
+ 
+
+  nextLevelBtn?.addEventListener('pointerup', async () => {
     const maxLevel = getMaxLevel();
     const next = levelNumber + 1;
 
@@ -51,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     rebuildGame({ withDropdowns: false });
   });
 
-  retryLevelBtn?.addEventListener('click', async () => {
+  retryLevelBtn?.addEventListener('pointerup', async () => {
     const { setLevelNumber } = await import('./level.js');
 
     setLevelNumber(levelNumber);
@@ -59,12 +89,29 @@ document.addEventListener('DOMContentLoaded', () => {
     goGame();
     rebuildGame({ withDropdowns: false });
   });
+  openSettingsFromGameBtn?.addEventListener('click', () => {
+
+  const topLeft = document.querySelector('.top-left');
+  topLeft?.classList.remove('open');
+
+  const settingsModal = document.getElementById('settingsModal');
+  settingsModal?.classList.remove('hidden');
+
+});
+  continueGameBtn?.addEventListener('click', () => {
+
+  const topLeft = document.querySelector('.top-left');
+  topLeft?.classList.remove('open');
+
+  continueGame();
+
+});
 
   resultMenuBtn?.addEventListener('click', () => {
     showScreen('menu');
   });
 
-  resultNextBtn?.addEventListener('click', async () => {
+  resultNextBtn?.addEventListener('pointerup', async () => {
     const maxLevel = getMaxLevel();
     const next = levelNumber + 1;
 
@@ -74,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     rebuildGame({ withDropdowns: true });
   });
 
-  resultRetryBtn?.addEventListener('click', async () => {
+  resultRetryBtn?.addEventListener('pointerup', async () => {
     const { setLevelNumber } = await import('./level.js');
 
     setLevelNumber(levelNumber);
@@ -164,6 +211,25 @@ document.addEventListener('DOMContentLoaded', () => {
     closeAllModals();
     showScreen('game');
   }
+  async function continueGame() {
+
+  const savedLevel = Number(localStorage.getItem(CURRENT_LEVEL_KEY));
+  if (savedLevel) {
+    setLevelNumber(savedLevel);
+  }
+
+  const { initLevels } = await import('./level.js');
+  await initLevels();
+
+  goGame();
+
+  const grid = document.getElementById('grid');
+
+  if (!grid || grid.children.length === 0) {
+    rebuildGame({ withDropdowns: true });
+  }
+
+}
 
   function rebuildGame({ withDropdowns = true } = {}) {
     resetForNewLevel();
@@ -233,15 +299,54 @@ document.addEventListener('DOMContentLoaded', () => {
   const exitBtn = document.getElementById('exitBtn');
   const exitBtn2 = document.getElementById('exitBtn2');
 
-  function handleExitToMenu() {
-    showScreen('menu');
-  }
+  function handleBackToSettings(e) {
 
-  exitBtn?.addEventListener('click', handleExitToMenu);
-  exitBtn2?.addEventListener('click', handleExitToMenu);
+  const settingsModal = document.getElementById('settingsModal');
+  const modal = e.target.closest('.modal');
 
+  if (modal) modal.classList.add('hidden');
+
+  settingsModal?.classList.remove('hidden');
+
+}
+
+  exitBtn?.addEventListener('click', () => {
+  showScreen('menu');
+});
+
+exitBtn2?.addEventListener('click', () => {
+  showScreen('menu');
+});
 
   const settingsBtn = document.getElementById('settingsBtn');
+const soundMenuBtn = document.getElementById('soundMenuBtn');
+const soundModal = document.getElementById('soundModal');
+
+const closeSoundModalBtn = document.getElementById('closeSoundModalBtn');
+closeSoundModalBtn?.addEventListener('click', handleBackToSettings);
+soundMenuBtn?.addEventListener('click', () => {
+  const settingsModal = document.getElementById('settingsModal');
+  const soundMenuBtn = document.getElementById('soundMenuBtn');
+  settingsModal?.classList.add('hidden');
+  soundModal?.classList.remove('hidden');
+});
+const exitSoundToMenuBtn = document.getElementById('exitSoundToMenuBtn');
+
+exitSoundToMenuBtn?.addEventListener('click', () => {
+
+  document.getElementById('soundModal')?.classList.add('hidden');
+  document.getElementById('settingsModal')?.classList.add('hidden');
+
+  continueGame();
+
+});
+
+closeSoundModalBtn?.addEventListener('click', () => {
+  const settingsModal = document.getElementById('settingsModal');
+
+  soundModal?.classList.add('hidden');
+  settingsModal?.classList.remove('hidden');
+});
 
 
   const levelNumEl = document.getElementById('levelNum');
@@ -292,11 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
           showBonusWordNotice('🔒 Рівень заблоковано');
           return;
         }
-
-
-
-
-
+      
 
         pendingLevel = i;
         levelWheelEl
@@ -320,14 +421,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const bgm = document.getElementById('bgm');
+  bgm?.addEventListener('ended', () => {
+
+  if (!isMusicOwner()) return;
+
+  loadTrack(trackIndex + 1);
+
+  bgm.currentTime = 0;
+
+  const p = bgm.play();
+  if (p && typeof p.catch === 'function') p.catch(()=>{});
+
+});
 
   const PLAYLIST = [
     './assets/bgm1.mp3',
     './assets/bgm2.mp3',
     './assets/bgm3.mp3',
     './assets/bgm4.mp3',
+    './assets/bgm5.mp3',
+    './assets/bgm6.mp3',
+    './assets/bgm7.mp3',
   ];
   let trackIndex = 0;
+  loadTrack(0);
   function loadTrack(index) {
     if (!bgm) return;
 
@@ -338,6 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const uiAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  let musicVolume = Number(localStorage.getItem('slovograi.musicVolume') || 0.18);
+  let uiVolume = Number(localStorage.getItem('slovograi.uiVolume') || 0.15);
   let uiSoundEnabled = true;
 
   const MUSIC_KEY = 'slovograi.musicEnabled';
@@ -363,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
     osc.type = 'triangle';
     osc.frequency.value = freq;
 
-    gain.gain.value = volume;
+    gain.gain.value = volume * uiVolume;
     gain.gain.exponentialRampToValueAtTime(0.0001, uiAudioCtx.currentTime + duration);
 
     osc.connect(gain);
@@ -522,9 +641,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   cancelNameBtn?.addEventListener('click', () => {
-
-    if (getPlayerName()) closeNameModal();
-  });
+  nameModal.classList.add('hidden');
+  settingsModal?.classList.remove('hidden');
+});
   if (!existingName) openNameModal();
 
 
@@ -542,6 +661,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const howToPlayModal = document.getElementById('howToPlayModal');
   const howToPlayBtn = document.getElementById('howToPlayBtn');
   const closeHowToPlayBtn = document.getElementById('closeHowToPlayBtn');
+  closeHowToPlayBtn?.addEventListener('click', handleBackToSettings);
+  closeProgressModal?.addEventListener('click', handleBackToSettings);
 
 
   const exportProgressBtn = document.getElementById('exportProgressBtn');
@@ -682,40 +803,85 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  function fadeInBgm(targetVolume = 0.25, duration = 1200) {
-    if (!bgm) return;
+  function fadeInBgm(targetVolume = 0.14, duration = 2800) {
 
-    bgm.volume = 0;
-    const playPromise = bgm.play();
+  if (!bgm) return;
 
-    if (playPromise && typeof playPromise.then === 'function') {
-      playPromise.then(() => {
-        const start = performance.now();
+  bgm.volume = 0.0001;
 
-        function step(now) {
-          const progress = Math.min((now - start) / duration, 1);
-          bgm.volume = progress * targetVolume;
+  const playPromise = bgm.play();
 
-          if (progress < 1) {
-            requestAnimationFrame(step);
-          }
+  if (playPromise && typeof playPromise.then === 'function') {
+
+    playPromise.then(() => {
+
+      const start = performance.now();
+
+      function step(now) {
+
+        const progress = Math.min((now - start) / duration, 1);
+
+        // smoother curve
+        const eased = progress * progress;
+
+        bgm.volume = eased * targetVolume;
+
+        if (progress < 1) {
+          requestAnimationFrame(step);
         }
 
-        requestAnimationFrame(step);
-      }).catch(() => { });
-    }
+      }
+
+      requestAnimationFrame(step);
+
+    }).catch(()=>{});
+
   }
+
+}
 
   function applySoundState() {
-    if (!bgm) return;
 
-    if (!musicEnabled) {
-      bgm.pause();
-      return;
-    }
+  if (!bgm) return;
 
-    fadeInBgm(0.25, 1200);
+  if (!musicEnabled) {
+    bgm.pause();
+    return;
   }
+
+   if (!bgm.paused) return;
+
+  fadeInBgm(musicVolume, 1200);
+
+}
+  function setMusicVolume(v){
+  musicVolume = Math.max(0, Math.min(1, Number(v)));
+  localStorage.setItem('slovograi.musicVolume', musicVolume);
+  if (bgm) bgm.volume = musicVolume;
+}
+
+function setUiVolume(v){
+  uiVolume = Math.max(0, Math.min(1, Number(v)));
+  localStorage.setItem('slovograi.uiVolume', uiVolume);
+}
+const musicSlider = document.getElementById('musicVolume');
+const uiSlider = document.getElementById('uiVolume');
+
+if (musicSlider) {
+  musicSlider.value = musicVolume;
+
+  musicSlider.addEventListener('input', (e) => {
+    setMusicVolume(e.target.value);
+  });
+}
+
+if (uiSlider) {
+  uiSlider.value = uiVolume;
+
+  uiSlider.addEventListener('input', (e) => {
+    setUiVolume(e.target.value);
+  });
+}
 
   function setMusicEnabled(value) {
     musicEnabled = !!value;
@@ -743,7 +909,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   settingsBtn?.addEventListener('click', openSettingsModal);
-  closeSettingsBtn?.addEventListener('click', closeSettingsModal);
+  
+  closeSettingsBtn?.addEventListener('click', () => {
+  closeSettingsModal();
+  showScreen('menu');
+});
 
   resetProgressBtn?.addEventListener('click', () => {
     if (!confirm('Скинути прогрес? Це видалить рівні, монети та ім’я.')) return;
@@ -792,12 +962,7 @@ document.addEventListener('DOMContentLoaded', () => {
     howToPlayModal?.classList.remove('hidden');
   });
 
-  closeHowToPlayBtn?.addEventListener('click', () => {
-    howToPlayModal?.classList.add('hidden');
-  });
-
-
-
+ 
 
   updateSoundUI();
   applySoundState();
@@ -875,15 +1040,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function closeAll() {
-      topLeft?.classList.remove('open');
-      coinsMenu?.classList.remove('open');
-    }
+
+  const grid = document.getElementById('grid');
+
+  topLeft?.classList.remove('open');
+  coinsMenu?.classList.remove('open');
+
+  if (grid) grid.style.pointerEvents = 'auto';
+
+}
 
     function toggle(container) {
-      const willOpen = !container.classList.contains('open');
-      closeAll();
-      if (willOpen) container.classList.add('open');
-    }
+
+  const grid = document.getElementById('grid');
+
+  const willOpen = !container.classList.contains('open');
+
+  closeAll();
+
+  if (willOpen) {
+    container.classList.add('open');
+
+    if (grid) grid.style.pointerEvents = 'none';
+  } else {
+    if (grid) grid.style.pointerEvents = 'auto';
+  }
+
+}
 
     menuBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -930,14 +1113,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     bgmStarted = true;
-    claimMusicOwner();
-    loadTrack(trackIndex);
-    applySoundState();
 
-    bgm?.addEventListener('ended', () => {
-      loadTrack(trackIndex + 1);
-      applySoundState();
-    });
+claimMusicOwner();
+
+if (isMusicOwner()) {
+
+  if (!bgm.src) {
+    loadTrack(0);
+  }
+
+  applySoundState();
+
+}
 
 
     const { initLevels } = await import('./level.js');
@@ -949,9 +1136,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-  window.addEventListener('storage', (e) => {
+  window.addEventListener('storage' , (e) => {
     if (e.key === TAB_KEY) applySoundState();
   });
+  document.addEventListener('visibilitychange', () => {
+
+  if (!bgm) return;
+
+  if (document.hidden) {
+    bgm.pause();
+  } else {
+
+    if (musicEnabled && bgmStarted && isMusicOwner()) {
+      const p = bgm.play();
+      if (p && typeof p.catch === 'function') p.catch(()=>{});
+    }
+
+  }
+
+});
 
 
 });

@@ -1014,6 +1014,40 @@ header.panel {
 /* =========================================================
    EXIT BUTTON (one style, everywhere)
    ========================================================= */
+   /* =========================================================
+   CONFIRM BUTTON
+   ========================================================= */
+
+.confirm-btn {
+
+  min-width: 180px;
+  height: 52px;
+
+  padding: 0 22px;
+
+  background: url("./assets/ui/btn_confirm_normal.png") no-repeat center;
+  background-size: 100% 100%;
+
+  border: none;
+  border-radius: 28px;
+  overflow: hidden;
+
+  font-weight: 900;
+  font-size: 16px;
+  color: #1f334a;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.confirm-btn:active {
+  background: url("./assets/ui/btn_confirm_pressed.png") no-repeat center/100% 100%;
+}
+
+.confirm-btn:disabled {
+  background: url("./assets/ui/btn_confirm_disabled.png") no-repeat center/100% 100%;
+}
 
 .exit-btn {
   width: 180px;
@@ -1323,4 +1357,16 @@ header.panel {
 
 .result-title-main {
   animation: trophyPop .5s ease;
+}
+.settings-list input[type="range"]{
+  width:100%;
+  margin-top:6px;
+  margin-bottom:12px;
+}
+.volume-block{
+margin:8px 0 14px;
+}
+
+.volume-block input{
+width:100%;
 }

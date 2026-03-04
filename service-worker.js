@@ -19,7 +19,10 @@ const ASSETS = [
   './assets/bgm1.mp3',
   './assets/bgm2.mp3',
   './assets/bgm3.mp3',
-  './assets/bgm4.mp3'
+  './assets/bgm4.mp3',
+  './assets/bgm5.mp3',
+  './assets/bgm6.mp3',
+  './assets/bgm7.mp3'
 ];
 
 self.addEventListener('install', e => {

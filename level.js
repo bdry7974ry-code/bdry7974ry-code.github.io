@@ -4,7 +4,7 @@ let levelCache = new Map();
 
 export let levelNumber = 1;
 
-const MAX_LEVEL = 100;
+const MAX_LEVEL = 999;
 
 
 const LEVEL_KEY = 'slovograi.level';
@@ -151,26 +151,27 @@ function buildLevel(n) {
     const pool = useHard ? (hardByLen.get(len) || []) : (sourceByLen.get(len) || []);
 
     let candidates = [];
-    for (const w of pool) {
-      if (used.has(w)) continue;
-      if (isBanned(w)) continue;
-      candidates.push(w);
-    }
 
-    if (!candidates.length) {
-      RECENT_WORDS = [];
-      for (const w of pool) {
-        if (used.has(w)) continue;
-        if (LAST_LEVEL_WORDS.has(w)) continue;
-        candidates.push(w);
-      }
-    }
+for (const w of pool) {
+  if (used.has(w)) continue;
+  if (isBanned(w)) continue;
+  candidates.push(w);
+}
 
-    if (!candidates.length) return null;
 
-    if (!candidates.length) {
-      return null;
-    }
+if (!candidates.length) {
+  candidates = pool.filter(w => !used.has(w) && !LAST_LEVEL_WORDS.has(w));
+}
+
+
+if (!candidates.length) {
+  candidates = pool.filter(w => !used.has(w));
+}
+
+
+if (!candidates.length) return null;
+
+
 
     const word = candidates[Math.floor(Math.random() * candidates.length)];
 
