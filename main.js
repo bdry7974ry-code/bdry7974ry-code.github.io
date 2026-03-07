@@ -272,8 +272,8 @@ const openSettingsFromGameBtn = document.getElementById('openSettingsFromGameBtn
     const maxLevel = getMaxLevel();
 
     if (completedLevel >= maxLevel) {
-      setMaxLevel(completedLevel);
-    }
+  setMaxLevel(Math.min(completedLevel + 1, 9999));
+}
 
     const sec = Math.round((Date.now() - levelStartTs) / 1000);
     const timeText = formatTimeSec(sec);
@@ -363,60 +363,104 @@ closeSoundModalBtn?.addEventListener('click', () => {
   }
 
 
-  function renderLevelWheel() {
-    if (!DEV_LEVEL_WHEEL || !levelWheelEl) return;
-    levelWheelEl.innerHTML = '';
+  let wheelEnd = 0;
 
-    const current = levelNumber;
+
+  function addWheelButtons(from, to) {
     const maxLevel = getMaxLevel();
-
-    const from = 1;
-    const to = 100;
-
-
     for (let i = from; i <= to; i++) {
       const btn = document.createElement('button');
       btn.textContent = i;
+      btn.dataset.level = i;
 
-      if (i === current) btn.classList.add('current');
+      if (i === levelNumber) btn.classList.add('current');
       if (i > maxLevel + 1) btn.classList.add('locked');
 
-
-
+      btn.addEventListener('mouseenter', () => {
+        btn.style.transform = 'scale(1.15)';
+      });
+      btn.addEventListener('mouseleave', () => {
+        if (!btn.classList.contains('current')) btn.style.transform = 'scale(1)';
+      });
       btn.onclick = () => {
-
-
-        if (i > maxLevel + 1) {
+        if (i > getMaxLevel() + 1) {
           btn.classList.add('locked');
-
-
           btn.classList.remove('shake');
           void btn.offsetWidth;
           btn.classList.add('shake');
-
           showBonusWordNotice('🔒 Рівень заблоковано');
           return;
         }
-      
-
         pendingLevel = i;
-        levelWheelEl
-          .querySelectorAll('button')
-          .forEach(b => b.classList.remove('current'));
-
+        levelWheelEl.querySelectorAll('button').forEach(b => b.classList.remove('current'));
         btn.classList.add('current');
       };
-
-
-
       levelWheelEl.appendChild(btn);
-
     }
+    wheelEnd = to;
+  }
+
+  let wheelScrollHandler = null;
+
+  function renderLevelWheel() {
+    if (!DEV_LEVEL_WHEEL || !levelWheelEl) return;
+    levelWheelEl.innerHTML = '';
+    wheelEnd = 0;
+
+    const current = levelNumber;
+
+    // Завжди починаємо з 1, перші 50 рівнів
+    addWheelButtons(1, 50);
+
     levelWheelEl.onwheel = (e) => {
       e.preventDefault();
       levelWheelEl.scrollLeft += e.deltaY;
     };
 
+    // Видаляємо старий scroll listener щоб не накопичувались
+    if (wheelScrollHandler) {
+      levelWheelEl.removeEventListener('scroll', wheelScrollHandler);
+    }
+
+    let wheelInitialized = false;
+
+    wheelScrollHandler = () => {
+      if (!wheelInitialized) return;
+      if (!levelWheelModal || levelWheelModal.classList.contains('hidden')) return;
+
+      if (wheelEnd >= 999) return;
+
+      // Додаємо ще 50 тільки коли скролимо близько до кінця
+      const allBtns = levelWheelEl.querySelectorAll('button');
+      const lastBtn = allBtns[allBtns.length - 1];
+      if (!lastBtn) return;
+
+      const scrollRight = levelWheelEl.scrollLeft + levelWheelEl.clientWidth;
+      const lastBtnRight = lastBtn.offsetLeft + lastBtn.offsetWidth;
+
+      if (lastBtnRight - scrollRight < lastBtn.offsetWidth * 5) {
+        addWheelButtons(wheelEnd + 1, Math.min(999, wheelEnd + 50));
+      }
+    };
+
+    levelWheelEl.addEventListener('scroll', wheelScrollHandler);
+
+    // Якщо current > 50 — докидаємо кнопки щоб він був видимий
+    if (current > wheelEnd) {
+      const neededEnd = Math.ceil(current / 50) * 50;
+      addWheelButtons(wheelEnd + 1, Math.min(999, neededEnd));
+    }
+
+    const currentBtn = [...levelWheelEl.querySelectorAll('button')]
+      .find(b => Number(b.dataset.level) === current);
+
+   if (currentBtn) {
+      setTimeout(() => {
+        const offset = currentBtn.offsetLeft - (levelWheelEl.offsetLeft) - levelWheelEl.clientWidth / 2 + currentBtn.offsetWidth / 2;
+        levelWheelEl.scrollLeft = Math.max(0, offset);
+        wheelInitialized = true;
+      }, 150);
+    }
   }
 
 
@@ -670,12 +714,13 @@ closeSoundModalBtn?.addEventListener('click', () => {
   const importProgressInput = document.getElementById('importProgressInput');
 
   const BACKUP_KEYS = [
-    'slovograi.maxLevel',
-    'slovograi.coins',
-    'slovograi.playerName',
-    'slovograi.musicEnabled',
-    'slovograi.uiSoundEnabled'
-  ];
+  'slovograi.maxLevel',
+  'slovograi.currentLevel',
+  'slovograi.coins',
+  'slovograi.playerName',
+  'slovograi.musicEnabled',
+  'slovograi.uiSoundEnabled'
+];
 
   function buildProgressBackup() {
     const data = {
@@ -713,7 +758,10 @@ closeSoundModalBtn?.addEventListener('click', () => {
       .replace(/[^\wа-яА-ЯіїєІЇЄ0-9_-]+/g, '_')
       .slice(0, 20);
 
-    const filename = `slovosvit_backup_${name}.json`;
+    const level = localStorage.getItem('slovograi.currentLevel') || '1';
+const date = new Date().toISOString().slice(0,10);
+
+const filename = `slovosvit_L${level}_${name}_${date}.json`;
     downloadJson(filename, data);
   }
 
@@ -735,10 +783,18 @@ closeSoundModalBtn?.addEventListener('click', () => {
 
 
     for (const k of BACKUP_KEYS) {
-      if (k in data.payload) {
-        localStorage.setItem(k, String(data.payload[k]));
-      }
-    }
+  if (k in data.payload) {
+    localStorage.setItem(k, String(data.payload[k]));
+  }
+}
+
+const cur = Number(localStorage.getItem('slovograi.currentLevel') || 1);
+const max = Number(localStorage.getItem('slovograi.maxLevel') || 1);
+
+if (cur > max) {
+  localStorage.setItem('slovograi.maxLevel', String(cur));
+}
+
 
     alert('✅ Прогрес відновлено. Перезавантажую гру...');
     location.reload();
@@ -753,7 +809,9 @@ closeSoundModalBtn?.addEventListener('click', () => {
   importProgressInput?.addEventListener('change', async () => {
     const file = importProgressInput.files?.[0];
     if (!file) return;
-    await importProgressFromFile(file);
+    if (!confirm("⚠️ Це перезапише поточний прогрес. Продовжити?")) return;
+
+await importProgressFromFile(file);
     importProgressInput.value = '';
   });
   progressBtn?.addEventListener('click', () => {
@@ -921,6 +979,7 @@ if (uiSlider) {
     const KEYS_TO_REMOVE = [
       'slovograi.maxLevel',
       'slovograi.currentLevel',
+      'slovograi.levelState',
       'slovograi.coins',
       'slovograi.playerName',
       'slovograi.musicEnabled',
@@ -928,7 +987,10 @@ if (uiSlider) {
     ];
 
     KEYS_TO_REMOVE.forEach(k => localStorage.removeItem(k));
-    location.reload();
+    setLevelNumber(1);
+    setCoins(200);
+    closeSettingsModal();
+    showScreen('menu');
   });
 
 
@@ -1092,22 +1154,21 @@ if (uiSlider) {
 
 
 
-  startBtn.onclick = async () => {
+ startBtn.onclick = async () => {
     const savedLevel = Number(localStorage.getItem(CURRENT_LEVEL_KEY));
-    if (savedLevel) {
+    const savedState = localStorage.getItem(LEVEL_STATE_KEY);
+
+    if (savedLevel && savedLevel > 0) {
       setLevelNumber(savedLevel);
-    }
-    const saved = localStorage.getItem(LEVEL_STATE_KEY);
-
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
-
-        if (data.levelNumber) setLevelNumber(data.levelNumber);
-        if (typeof data.timeLeft === 'number') timeLeft = data.timeLeft;
-        if (typeof data.coins === 'number') setCoins(data.coins);
-
-      } catch { }
+      if (savedState) {
+        try {
+          const data = JSON.parse(savedState);
+          if (typeof data.timeLeft === 'number') timeLeft = data.timeLeft;
+          if (typeof data.coins === 'number') setCoins(data.coins);
+        } catch { }
+      }
+    } else {
+      setLevelNumber(1);
     }
     goGame();
 
@@ -1126,14 +1187,17 @@ if (isMusicOwner()) {
 
 }
 
-
-    const { initLevels } = await import('./level.js');
+const { initLevels } = await import('./level.js');
     await initLevels();
-    refreshLevelUI();
 
+    // Якщо після скидання немає збереженого рівня — примусово ставимо 1
+    if (!Number(localStorage.getItem(CURRENT_LEVEL_KEY))) {
+      setLevelNumber(1);
+    }
+
+    refreshLevelUI();
     rebuildGame({ withDropdowns: true });
   };
-
 
 
   window.addEventListener('storage' , (e) => {

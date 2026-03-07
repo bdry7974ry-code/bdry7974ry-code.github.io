@@ -1,7 +1,3 @@
-/* =========================================================
-   RESET / BASE
-   Базові налаштування для всієї гри
-   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -16,17 +12,12 @@ html {
 body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #ffffff;
-  color: #020617;
+  background: #f5ede0;
+  color: #3b2a1a;
   overflow-x: hidden;
 }
 
 
-
-
-/* =========================================================
-   BUTTONS (базовий стиль кнопок)
-   ========================================================= */
 button {
   border: none;
   font: inherit;
@@ -49,10 +40,6 @@ button:active {
   transform: scale(0.96);
 }
 
-/* =========================================================
-   APP / SCREENS
-   ========================================================= */
-
 .app {
   min-height: 100svh;
 
@@ -67,7 +54,79 @@ button:active {
 .screen.active {
   display: flex;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
+  min-height: 100svh;
+}
+
+/* ── МОБІЛЬНИЙ (телефон) ── */
+@media (max-width: 520px) {
+  html, body {
+    height: 100%;
+    height: 100dvh;
+  }
+
+  .app {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  .screen.active {
+    align-items: stretch;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  #menu-screen .game-wrapper,
+  #game-screen .game-wrapper,
+  #result-screen .game-wrapper {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0;
+    flex: 1;
+  }
+}
+
+@media (min-width: 521px) {
+  .app {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .screen.active {
+    align-items: center;
+    justify-content: center;
+    min-height: unset;
+    height: auto;
+  }
+
+  #menu-screen .game-wrapper,
+  #game-screen .game-wrapper,
+  #result-screen .game-wrapper {
+    width: 390px !important;
+    max-width: 390px !important;
+    height: min(844px, 95svh) !important;
+    max-height: min(844px, 95svh) !important;
+    min-height: unset !important;
+    border-radius: 28px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 20px 60px rgba(78,54,32,.25);
+  }
+}
+
+.site-nav ~ .app .screen.active {
+  min-height: calc(100svh - 33px);
+  padding-top: 33px;
+}
+
+.site-nav ~ .app #game-screen.screen.active,
+.site-nav ~ .app #menu-screen.screen.active,
+.site-nav ~ .app #result-screen.screen.active {
+  padding-top: 0;
   min-height: 100svh;
 }
 
@@ -156,9 +215,6 @@ button:active {
 
 
 
-/* =========================================================
-   TOP BAR
-   ========================================================= */
 header.panel {
   padding: 14px;
 
@@ -175,9 +231,6 @@ header.panel {
   position: relative;
 }
 
-/* =========================================================
-   DROPDOWN MENUS
-   ========================================================= */
 
 .dropdown {
   position: absolute;
@@ -228,19 +281,12 @@ header.panel {
   margin: 4px 0;
 }
 
-/* =========================================================
-   GOAL (ціль рівня)
-   ========================================================= */
-
 .panel.goal {
   padding: 10px 16px;
   background: transparent;
   border: none;
 }
 
-/* =========================================================
-   GOAL ORNAMENT TICKER (бігуча стрічка орнаменту)
-   ========================================================= */
 
 .goal-ornament {
   height: 16px;
@@ -422,17 +468,14 @@ header.panel {
 }
 
 
-
-/* =========================================================
-   GRID (ігрове поле)
-   ========================================================= */
-
 .game-card {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   touch-action: none;
+  overflow: hidden;
 }
 
 .grid {
@@ -469,10 +512,6 @@ header.panel {
 .cell.locked {
   background: linear-gradient(135deg, #38bdf8, #2563eb);
 }
-
-/* =========================================================
-   MENU SCREEN
-   ========================================================= */
 
 #menu-screen .game-wrapper {
   padding: 16px;
@@ -522,9 +561,6 @@ header.panel {
 
 }
 
-/* =========================================================
-   MENU BUTTONS (menu-btn variants)
-   ========================================================= */
 
 .menu-btn {
   display: block;
@@ -685,11 +721,6 @@ header.panel {
 }
 
 
-/* =========================================================
-   MODAL ACTION BUTTONS
-   Фікс контрасту кнопки "Далі" в модалці
-   ========================================================= */
-
 .modal-actions {
   margin-top: 14px;
   display: flex;
@@ -731,9 +762,7 @@ header.panel {
   }
 }
 
-/* =========================================================
-   SHOP MODAL STYLES (як у меню)
-   ========================================================= */
+
 .shop-list {
   display: flex;
   flex-direction: column;
@@ -769,9 +798,7 @@ header.panel {
   margin-bottom: 20px;
 }
 
-/* =========================================================
-   LEVEL WHEEL (барабан рівнів)
-   ========================================================= */
+
 .level-wheel {
   display: flex;
   gap: 12px;
@@ -796,7 +823,7 @@ header.panel {
 .level-wheel button {
   min-width: 52px;
   height: 46px;
-
+  transition: transform .18s ease, opacity .18s ease;
   background: url("./assets/ui/btn_normal.png") no-repeat center;
   background-size: 100% 100%;
 
@@ -812,8 +839,10 @@ header.panel {
 }
 
 .level-wheel button.current {
+  transform: scale(1.35);
   background: url("./assets/ui/btn_pressed.png") no-repeat center/100% 100%;
-  transform: scale(1.05);
+  color: #fff;
+  z-index: 2;
 }
 
 .level-wheel button.locked {
@@ -859,9 +888,6 @@ header.panel {
 }
 
 
-/* =========================
-   RESULT SCREEN
-   ========================= */
 .result-wrapper {
   flex: 1;
   width: 100%;
@@ -981,9 +1007,6 @@ header.panel {
   margin: 0;
 }
 
-/* =========================================================
-   UNIFY BUTTONS (single system)
-   ========================================================= */
 
 .btn {
   width: 100%;
@@ -1011,12 +1034,6 @@ header.panel {
   transform: scale(0.98);
 }
 
-/* =========================================================
-   EXIT BUTTON (one style, everywhere)
-   ========================================================= */
-   /* =========================================================
-   CONFIRM BUTTON
-   ========================================================= */
 
 .confirm-btn {
 
@@ -1093,9 +1110,6 @@ header.panel {
   margin-right: auto;
 }
 
-/* ================================
-   MENU BACKGROUND (single image)
-   ================================ */
 
 #menu-screen .game-wrapper {
   width: 100%;
@@ -1167,10 +1181,6 @@ header.panel {
   font-weight: 600;
   color: #475569;
 }
-
-/* ================================
-   GAME BACKGROUND
-   ================================ */
 
 #game-screen .game-wrapper {
   width: 100%;
@@ -1369,4 +1379,24 @@ margin:8px 0 14px;
 
 .volume-block input{
 width:100%;
+}
+.site-nav{
+position:fixed;
+top:0;
+left:0;
+right:0;
+padding:12px 20px;
+background:#fdf6ec;
+border-bottom:1px solid #d9c4a8;
+z-index:1000;
+font-family:'PT Serif', serif;
+}
+
+.site-nav a{
+text-decoration:none;
+color:#4e3620;
+font-weight:600;
+}
+.app{
+padding-top:50px;
 }

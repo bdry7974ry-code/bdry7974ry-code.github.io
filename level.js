@@ -7,7 +7,7 @@ export let levelNumber = 1;
 const MAX_LEVEL = 999;
 
 
-const LEVEL_KEY = 'slovograi.level';
+const LEVEL_KEY = 'slovograi.currentLevel';
 
 let LAST_LEVEL_WORDS = new Set();
 let RECENT_WORDS = [];
@@ -16,7 +16,7 @@ const RECENT_WORDS_LIMIT = 400;
 let HARD_WORDS = [];
 let WORDS_BY_LEN = new Map();
 let HARD_BY_LEN = new Map();
-
+let USED_BY_LEN = new Map();
 function buildLenIndex(arr) {
   const m = new Map();
   for (const w of arr) {
@@ -117,11 +117,13 @@ function buildLevel(n) {
   const size = gridSizeForLevel(safeN);
   const minLen = minLenForLevel(safeN);
 
-  const gen = generateLevel({
-    cols: size,
-    rows: size,
-    levelNumber: safeN
-  });
+  const genLevel = safeN > 100 ? 100 : Math.max(1, safeN);
+
+const gen = generateLevel({
+  cols: size,
+  rows: size,
+  levelNumber: genLevel
+});
   const lvl = {};
   let picked = [];
 
@@ -150,33 +152,50 @@ function buildLevel(n) {
 
     const pool = useHard ? (hardByLen.get(len) || []) : (sourceByLen.get(len) || []);
 
-    let candidates = [];
+let usedLen = USED_BY_LEN.get(len);
+if (!usedLen) {
+  usedLen = new Set();
+  USED_BY_LEN.set(len, usedLen);
+}
 
-for (const w of pool) {
-  if (used.has(w)) continue;
-  if (isBanned(w)) continue;
-  candidates.push(w);
+   let candidates = pool.filter(w =>
+  !used.has(w) &&
+  !usedLen.has(w) &&
+  !isBanned(w)
+);
+
+if (!candidates.length) {
+
+  usedLen.clear();
+
+  candidates = pool.filter(w =>
+    !used.has(w) &&
+    !usedLen.has(w)
+  );
+
+}
+
+if (!candidates.length) {
+
+  candidates = pool.filter(w =>
+    !used.has(w)
+  );
+
 }
 
 
 if (!candidates.length) {
-  candidates = pool.filter(w => !used.has(w) && !LAST_LEVEL_WORDS.has(w));
+  console.warn('⚠️ no candidates for len', len);
+  return pool[Math.floor(Math.random() * pool.length)];
 }
-
-
-if (!candidates.length) {
-  candidates = pool.filter(w => !used.has(w));
-}
-
-
-if (!candidates.length) return null;
 
 
 
     const word = candidates[Math.floor(Math.random() * candidates.length)];
 
     used.add(word);
-    return word;
+usedLen.add(word);
+return word;
   });
 
 
@@ -228,8 +247,7 @@ if (!candidates.length) return null;
     RECENT_WORDS = RECENT_WORDS.slice(-RECENT_WORDS_LIMIT);
   }
 
-  levelCache.set(n, lvl);
-
+   levelCache.set(n, structuredClone(lvl));
   
   const next = n + 1;
   if (!levelCache.has(next)) {
@@ -255,10 +273,10 @@ export async function initLevels() {
 
   }
 
-  const saved = Number(localStorage.getItem(LEVEL_KEY));
+ const saved = Number(localStorage.getItem(LEVEL_KEY));
   levelNumber = Number.isFinite(saved) && saved > 0 ? saved : 1;
 
-  level = buildLevel(levelNumber);
+    level = buildLevel(levelNumber);
   window.level = level;
   return level;
 }
@@ -286,12 +304,7 @@ export async function nextLevel() {
 
   const next = levelNumber + 1;
   setLevelNumber(next);
-
-  if (!levelCache.has(next)) {
-    level = buildLevel(next);
-  }
-
-  window.level = level;
+   window.level = level;
   return level;
 }
 
@@ -303,7 +316,7 @@ export async function reloadLevel() {
   if (cached) {
     level = structuredClone(cached);
   } else {
-    level = buildLevel(levelNumber);
+    level = buildLevel(Math.min(levelNumber, 100));
   }
 
   window.level = level;

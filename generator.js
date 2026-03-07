@@ -9,7 +9,8 @@ export function generateLevel({ cols, rows, levelNumber }) {
     if (n >= 39 && n <= 50) return 'L39_50';
     if (n >= 51 && n <= 62) return 'L51_62';
     if (n >= 63 && n <= 100) return 'L63_100';
-    return `L${n}`;
+if (n > 100) return 'L63_100';
+return `L${n}`;
   }
 
   
@@ -18,9 +19,14 @@ export function generateLevel({ cols, rows, levelNumber }) {
     if (t.size[0] !== rows || t.size[1] !== cols) return false;
 
     if (t.levels && Array.isArray(t.levels)) {
-      const [a, b] = t.levels;
-      return levelNumber >= a && levelNumber <= b;
-    }
+  const [a, b] = t.levels;
+
+  if (levelNumber > 100) {
+  return a <= 100 && b >= 63;
+}
+
+  return levelNumber >= a && levelNumber <= b;
+}
     return false;
   });
 
@@ -30,7 +36,7 @@ export function generateLevel({ cols, rows, levelNumber }) {
   }
 
   
-  const band = bandKeyForLevel(levelNumber);
+  
   const [a, b] = list[0].levels; 
   const key = `tplCycle_${rows}x${cols}_L${a}_${b}`;
 

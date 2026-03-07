@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192-v2.png">
+  <link rel="apple-touch-icon" href="icon-192-v2.png">
+  <meta name="theme-color" content="#111111">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta charset="UTF-8">
+  <title>СЛОВОСВІТ</title>
+   <link rel="stylesheet" href="./style.css">
+   <style>
+     html { overflow: hidden; margin: 0; padding: 0; }
+     body {
+       overflow: hidden;
+       margin: 0;
+       padding: 0;
+       background: #f5ede0;
+       background-image:
+         radial-gradient(ellipse 60% 50% at 20% 80%, rgba(192,132,90,.18) 0%, transparent 70%),
+         radial-gradient(ellipse 50% 40% at 80% 20%, rgba(122,92,58,.12) 0%, transparent 70%);
+       background-attachment: fixed;
+     }
+     @media (max-width: 520px) {
+       .app { margin: 0; padding: 0; }
+       .screen.active { margin: 0; padding: 0; }
+       .game-wrapper { margin: 0 !important; border-radius: 0 !important; }
+     }
+   </style>
+</head>
+<body>
+
+<a href="https://slovograi.github.io/" onclick="event.preventDefault(); window.location.replace('https://slovograi.github.io/');" style="position:fixed;bottom:8px;right:8px;z-index:9999;background:rgba(253,246,236,0.85);color:#7a5c3a;text-decoration:none;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #d9c4a8;backdrop-filter:blur(4px);opacity:0.7;">← На сайт</a>
+<main class="app" aria-label="СЛОВОСВІТ — гра з пошуку слів">
+
+<section id="menu-screen" class="screen active" aria-label="Головне меню">
+      <div class="game-wrapper">
+
+       
+        <header class="menu-header">
+          <div class="ornament ornament-top"></div>
+
+          <h1 class="title">СЛОВОСВІТ</h1>
+
+          <p class="subtitle line1">Грай словами.</p>
+          <p class="subtitle line2">Думай українською.</p>
+        </header>
+
+        <nav class="menu-actions" aria-label="Меню дій">
+          <div class="ornament"></div>
+
+          <button id="startGameBtn" type="button" class="menu-btn primary">Почати гру</button>
+          <button id="settingsBtn" type="button" class="menu-btn ghost"><span class="icon">⚙</span>
+            Налаштування</button>
+          <div class="ornament"></div>
+
+        </nav>
+
+
+       
+        <section class="profile-card" aria-label="Профіль">
+
+          <img src="./assets/ui/house.png" alt="" class="profile-house">
+
+          <div class="profile-text">
+            <div class="profile-name" id="playerName">Гравець</div>
+            <div class="profile-sub">Вітаємо у СЛОВОСВІТ</div>
+          </div>
+
+        </section>
+
+
+        <div class="ornament ornament-bottom"></div>
+      </div>
+    </section>
+
+
+
+    <section id="game-screen" class="screen">
+      <div class="game-wrapper">
+       
+        <header class="panel top-bar">
+
+          <div class="top-left">
+            <button class="menu-btn chip top-mini">Меню</button>
+            <ul class="dropdown">
+              <li><button id="continueGameBtn" class="btn">▶ Продовжити гру</button></li>
+<li><button id="retryLevelBtn" class="btn">🔄 Спробувати ще раз</button></li>
+<li><button id="openSettingsFromGameBtn" class="btn">⚙ Налаштування</button></li>
+<li><button id="exitBtn" class="exit-btn">🚪 Вийти</button></li>
+            </ul>
+
+
+          </div>
+          <div class="level">
+            Рівень&nbsp;<strong id="levelNum">1</strong>
+          </div>
+
+
+          <div class="top-right">
+            <div class="coins-menu">
+              <button class="coins-btn menu-btn chip top-mini">💰 <span id="coins">200</span></button>
+              <ul class="dropdown">
+
+<li><button id="continueGameBtnCoins" class="btn">▶ Продовжити гру</button></li>
+
+<li><button id="hintBtn" class="btn">Підказка 1 літера - 40💰</button></li>
+
+<li><button id="hintWordBtn" class="btn">Підказка слово - 100💰</button></li>
+
+<li><button id="shopBtn" class="btn">Магазин</button></li>
+
+
+</ul>
+
+
+              <div id="shopModal" class="shop-pop hidden">
+                <div class="shop-pop-card">
+                  <h3>Гаманець</h3>
+
+                  <div class="shop-list">
+                    <button type="button" class="btn shop-pack" data-coins="100">
+                      +100 💰
+                    </button>
+
+                    <button type="button" class="btn shop-pack" data-coins="500">
+                      +500 💰
+                    </button>
+
+                    <button type="button" class="btn shop-pack" data-coins="1000">
+                      +1000 💰
+                    </button>
+                  </div>
+
+                  <div class="modal-actions">
+                    <button id="closeShopBtn" type="button" class="exit-btn">Вийти</button>
+
+                  </div>
+
+
+
+                </div>
+              </div>
+        </header>
+
+      
+        <div class="panel goal" id="goalBlock">
+          <div id="goalText" class="goal-row">
+            <span class="goal-left">⏱ Знайди <strong>5 слів</strong> за</span>
+            <span id="timer" class="goal-timer">02:00</span>
+            <span class="goal-right">+50💰</span>
+          </div>
+
+        </div>
+
+
+        <div id="bonusWordNotice" class="bonus-word-notice"></div>
+        <div class="goal-ornament" aria-hidden="true">
+          <div class="goal-ornament__track">
+            ✦ ✦ ✦
+            <span class="sep" id="gridSep">•</span>
+            ✦ ✦ ✦
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div id="grid" class="grid"></div>
+        </div>
+
+        <div class="goal-stats">
+          <div class="stat">⭐ Бонусних слів: <strong id="bonusWordsFound">0</strong></div>
+          <div class="stat">💰 Монет: <strong id="coinsEarned">0</strong></div>
+        </div>
+
+
+      
+        <div class="ad-space">
+          <div class="ticker">
+            <div class="ticker__track" id="adTickerTrack">
+              <span>Ходила на сповідь до священика, навіть не довелось нічого розказувати. Він на мене вже давно
+                підписаний.</span>
+              <span>Стоять дві блондинки на зупинці, чекають трамвай. Одна каже до іншої: – Ти на який чекаєш? – На 3, а
+                ти? – На 6. Тут під’їжджає 63. Блондинки зраділи і одна каже до другої: – Класно поїдемо разом!</span>
+              <span>Любий, ти чому нічого не робиш? — Все, що не робиться – все на краще!</span>
+              <span>Купила своєму чоловікові костюм-трійку: труси і дві шкарпетки. Люблю його, заразу… балую!</span>
+              <span>Я настільки лінивий, що навіть у моєму «списку справ» лише один пункт: «Зробити список
+                справ».</span>
+              <span>В нашій сім’ї зарядкою займаються лише мобільні телефони…</span>
+              <span>Тату у нас сьогодні в школі скорочені батьківські збори. – Що значить скорочені? – Ти, я і
+                директор.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  
+    <section id="result-screen" class="screen" aria-label="Результат рівня">
+      <div class="game-wrapper">
+        <div class="result-wrapper">
+
+          <div class="result-title">
+            <div class="result-title-main">🏆 Ви зробили це!</div>
+            <div class="result-level-done">Рівень <strong id="resultLevelNum">1</strong> завершено</div>
+          </div>
+
+          <div class="result-stats">
+            <div class="row"><span>⏱ Час:</span> <strong id="resultTime">00:00</strong></div>
+            <div class="row"><span>🔎 Слів знайдено:</span> <strong id="resultFound">0</strong></div>
+            <div class="row"><span>💰 Монет отримано:</span> <strong id="resultEarned">0</strong></div>
+          </div>
+
+          <div class="result-actions">
+            <button id="resultNextBtn" class="menu-btn primary result-big">
+              Наступний рівень <strong id="resultNextLevelNum">2</strong>
+            </button>
+            <button id="resultRetryBtn" class="menu-btn ghost result-secondary">
+              Спробувати ще раз (<span id="resultRetryLevelNum">1</span>)
+            </button>
+            <button id="resultExitBtn" class="exit-btn">Вийти</button>
+          </div>
+
+        </div>
+
+        <div class="ad-space"></div>
+    </section>
+
+    </main>
+
+    <audio id="bgm" preload="auto"></audio>
+
+    <script type="module" src="./main.js"></script>
+
+  <div id="nameModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Введіть ім’я">
+    <div class="modal-card">
+      <h3>Як тебе звати?</h3>
+      <p>Це ім’я буде видно на стартовому екрані та в рейтингу.</p>
+
+      <input id="nameInput" type="text" placeholder="Напр., Максим" maxlength="20" />
+      <div class="modal-actions">
+        <button id="cancelNameBtn" type="button" class="exit-btn">Назад</button>
+
+        <button id="saveNameBtn" class="confirm-btn">Підтвердити</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="howToPlayModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Як грати">
+    <div class="modal-card">
+      <h3>Як грати</h3>
+
+      <p><strong>СЛОВОСВІТ</strong> — знайди всі зашифровані слова на полі.</p>
+
+      <p>
+        Веди по <strong>сусідніх літерах</strong> (без діагоналей),
+        слово може згинатися “змійкою”.
+      </p>
+
+      <p>
+        <strong>Додаткові слова</strong> дають бонус-монети —
+        використай їх на підказки.
+      </p>
+
+      <div class="modal-actions">
+        <button id="closeHowToPlayBtn" type="button" class="exit-btn">Назад</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Налаштування">
+    <div class="modal-card">
+      <h3>Налаштування</h3>
+      <p>Налаштуй гру під себе.</p>
+      <button id="installBtn" type="button" class="menu-btn ghost">
+        📲 Додати на екран
+      </button>
+
+      <div class="settings-list">
+  <button id="levelsBtn" type="button" class="btn">🎡 Рівні</button>
+  <button id="changeNameBtn" type="button" class="btn">🙂 Змінити ім’я</button>
+  <button id="soundMenuBtn" type="button" class="btn">🔊 Звуки</button>
+  <button id="howToPlayBtn" type="button" class="btn">❓ Як грати</button>
+  <button id="progressBtn" type="button" class="btn">💾 Прогрес</button>
+</div>
+
+
+      <div class="modal-actions">
+        <button id="closeSettingsBtn" class="exit-btn">Назад</button>
+
+      </div>
+    </div>
+  </div>
+  <div id="progressModal" class="modal hidden">
+    <div class="modal-card">
+      <h3>Прогрес</h3>
+
+      <div class="settings-list">
+        <button id="exportProgressBtn" class="btn">📤 Зберегти прогрес</button>
+        <button id="importProgressBtn" class="btn">📥 Завантажити прогрес</button>
+        <button id="resetProgressBtn" class="btn">🗑 Скинути прогрес</button>
+        <input id="importProgressInput" type="file" accept="application/json,.json" hidden>
+      </div>
+
+      <div class="modal-actions">
+        <button id="closeProgressModal" class="exit-btn">Назад</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="levelWheelModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Вибір рівня">
+    <div class="modal-card">
+      <h3>Рівні</h3>
+
+      <div id="levelWheel" class="level-wheel"></div>
+
+      <div class="modal-actions">
+        <button id="closeLevelWheelBtn" type="button" class="exit-btn">Назад</button>
+        <button id="confirmLevelBtn" type="button" class="confirm-btn">Підтвердити</button>
+      </div>
+    </div>
+  </div>
+  <div id="soundModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Звуки">
+  <div class="modal-card">
+    <h3>Звуки</h3>
+
+    <button id="toggleMusicBtn" class="btn">
+      🎵 Музика
+    </button>
+
+    <div class="volume-block">
+      <label>🎵 Гучність музики</label>
+      <input type="range" id="musicVolume" min="0" max="1" step="0.05">
+    </div>
+
+    <button id="toggleUiSoundBtn" class="btn">
+      🔊 Звуки
+    </button>
+
+    <div class="volume-block">
+      <label>🔊 Гучність звуків</label>
+      <input type="range" id="uiVolume" min="0" max="1" step="0.05">
+    </div>
+
+    <div class="modal-actions">
+     <button id="closeSoundModalBtn" class="exit-btn">Назад</button>
+     <button id="exitSoundToMenuBtn" class="menu-btn primary small">Продовжити гру</button>
+    </div>
+
+  </div>
+</div>
+
+</body>
+
+</html>
