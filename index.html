@@ -6,34 +6,33 @@
   <title>СЛОВОСВІТ — гра з пошуку слів українською</title>
   <meta name="description" content="СЛОВОСВІТ — безкоштовна гра з пошуку українських слів. Грай у браузері, без реєстрації.">
   <meta property="og:title" content="СЛОВОСВІТ — українська гра слів">
-<meta property="og:description" content="Безкоштовна гра пошуку українських слів у браузері">
-<meta property="og:image" content="https://slovograi.github.io/icon-512.png">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://slovograi.github.io">
+  <meta property="og:description" content="Безкоштовна гра пошуку українських слів у браузері">
+  <meta property="og:image" content="https://slovograi.github.io/icon-512.png">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://slovograi.github.io">
   <link rel="icon" href="icon-192-v2.png">
-<link rel="apple-touch-icon" href="icon-512.png">
-<link rel="canonical" href="https://slovograi.github.io/">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <link rel="canonical" href="https://slovograi.github.io/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
   <style>
+    /* ── Змінні ── */
     :root {
-      --bg:        #f5ede0;
-      --card:      #fdf6ec;
-      --brown:     #7a5c3a;
-      --brown-dk:  #4e3620;
-      --accent:    #c0845a;
-      --accent2:   #e8a87c;
-      --text:      #3b2a1a;
-      --muted:     #9a8070;
-      --border:    #d9c4a8;
-      --green:     #6a9e6a;
+      --bg:       #f5ede0;
+      --card:     #fdf6ec;
+      --brown:    #7a5c3a;
+      --brown-dk: #4e3620;
+      --accent:   #c0845a;
+      --accent2:  #e8a87c;
+      --text:     #3b2a1a;
+      --muted:    #9a8070;
+      --border:   #d9c4a8;
+      --green:    #6a9e6a;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
-
     body {
       background: var(--bg);
       font-family: 'PT Serif', Georgia, serif;
@@ -41,36 +40,33 @@
       overflow-x: hidden;
     }
 
-    /* ── NAV ── */
+    /* ── Навігація ── */
     nav {
       position: sticky; top: 0; z-index: 100;
       background: var(--card);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.75rem 2rem;
-      box-shadow: 0 2px 12px rgba(90,60,30,0.08);
+      padding: .75rem 2rem;
+      box-shadow: 0 2px 12px rgba(90,60,30,.08);
     }
     .nav-logo {
       font-family: 'Playfair Display', serif;
       font-weight: 900; font-size: 1.3rem;
-      color: var(--brown-dk); letter-spacing: 0.12em;
+      color: var(--brown-dk); letter-spacing: .12em;
       text-decoration: none;
     }
     .nav-links { display: flex; gap: 1.5rem; list-style: none; }
-    .nav-links a {
-      font-size: 0.9rem; color: var(--brown);
-      text-decoration: none; transition: color .2s;
-    }
+    .nav-links a { font-size: .9rem; color: var(--brown); text-decoration: none; transition: color .2s; }
     .nav-links a:hover { color: var(--accent); }
     .nav-play {
       background: var(--brown); color: #fff;
-      padding: 0.5rem 1.4rem; border-radius: 50px;
-      font-family: 'PT Serif', serif; font-size: 0.9rem;
+      padding: .5rem 1.4rem; border-radius: 50px;
+      font-family: 'PT Serif', serif; font-size: .9rem;
       text-decoration: none; transition: background .2s;
     }
     .nav-play:hover { background: var(--brown-dk); }
 
-    /* ── HERO ── */
+    /* ── Герой ── */
     .hero {
       min-height: 92vh;
       display: flex; flex-direction: column;
@@ -87,10 +83,7 @@
         radial-gradient(ellipse 50% 40% at 80% 20%, rgba(122,92,58,.12) 0%, transparent 70%);
       pointer-events: none;
     }
-    .hero-ornament {
-      font-size: 1rem; letter-spacing: .6rem;
-      color: var(--accent); opacity: .7; margin-bottom: 1.2rem;
-    }
+    .hero-ornament { font-size: 1rem; letter-spacing: .6rem; color: var(--accent); opacity: .7; margin-bottom: 1.2rem; }
     .hero h1 {
       font-family: 'Playfair Display', serif;
       font-size: clamp(3rem, 10vw, 6rem);
@@ -98,20 +91,14 @@
       letter-spacing: .15em; line-height: 1;
       margin-bottom: .8rem;
     }
-    .hero-sub {
-      font-size: clamp(1rem, 3vw, 1.3rem);
-      color: var(--brown); font-style: italic;
-      margin-bottom: 2.5rem; line-height: 1.6;
-    }
-    .hero-btns {
-      display: flex; gap: 1rem; flex-wrap: wrap;
-      justify-content: center;
-    }
+    .hero-sub { font-size: clamp(1rem, 3vw, 1.3rem); color: var(--brown); font-style: italic; margin-bottom: 2.5rem; line-height: 1.6; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+    /* ── Кнопки ── */
     .btn-primary {
       background: var(--brown); color: #fff;
       padding: .9rem 2.5rem; border-radius: 50px;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem; font-weight: 700;
+      font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700;
       text-decoration: none; letter-spacing: .05em;
       box-shadow: 0 4px 20px rgba(78,54,32,.25);
       transition: background .2s, transform .15s;
@@ -120,15 +107,14 @@
     .btn-ghost {
       background: transparent; color: var(--brown);
       padding: .9rem 2.5rem; border-radius: 50px;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.1rem; font-weight: 700;
+      font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700;
       text-decoration: none; letter-spacing: .05em;
       border: 2px solid var(--border);
       transition: border-color .2s, color .2s, transform .15s;
     }
     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
-    /* Fake phone mockup */
+    /* ── Макет телефону ── */
     .phone-mockup {
       margin-top: 3rem;
       width: min(280px, 75vw);
@@ -137,13 +123,6 @@
       border: 3px solid var(--border);
       box-shadow: 0 16px 60px rgba(78,54,32,.2), 0 2px 8px rgba(78,54,32,.1);
       overflow: hidden;
-      position: relative;
-    }
-    .phone-screen {
-      padding: 1.2rem 1rem;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 6px;
     }
     .phone-bar {
       background: var(--brown); color: #fff;
@@ -151,12 +130,17 @@
       text-align: center; padding: .4rem;
       font-family: 'Playfair Display', serif;
     }
+    .phone-screen {
+      padding: 1.2rem 1rem;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
     .cell {
       aspect-ratio: 1;
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-weight: 700; font-size: 1rem;
+      font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem;
       color: var(--brown-dk);
       background: #eddfc8;
       border: 1.5px solid var(--border);
@@ -165,62 +149,32 @@
     .cell.lit  { background: var(--accent2); border-color: var(--accent); color: #fff; }
     .cell.done { background: var(--green);   border-color: #4a7a4a;       color: #fff; }
 
-    /* ── SECTION BASE ── */
+    /* ── Секції ── */
     section { padding: 5rem 1.5rem; }
     .section-inner { max-width: 960px; margin: 0 auto; }
-    .section-label {
-      font-size: .75rem; letter-spacing: .3em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: .5rem;
-    }
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.6rem, 4vw, 2.4rem);
-      color: var(--brown-dk); margin-bottom: 1rem;
-    }
-    .section-desc {
-      font-size: 1rem; color: var(--muted);
-      line-height: 1.8; max-width: 600px;
-    }
-    .ornament-line {
-      width: 60px; height: 3px;
-      background: var(--accent); border-radius: 2px;
-      margin: 1rem 0 2rem;
-    }
+    .section-label { font-size: .75rem; letter-spacing: .3em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); color: var(--brown-dk); margin-bottom: 1rem; }
+    .section-desc  { font-size: 1rem; color: var(--muted); line-height: 1.8; max-width: 600px; }
+    .ornament-line { width: 60px; height: 3px; background: var(--accent); border-radius: 2px; margin: 1rem 0 2rem; }
 
-    /* ── HOW TO PLAY ── */
+    /* ── Як грати ── */
     #how { background: var(--card); }
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem; margin-top: 2.5rem;
-    }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
     .step {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem 1.2rem;
-      text-align: center;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 16px;
+      padding: 1.5rem 1.2rem; text-align: center;
       transition: transform .2s, box-shadow .2s;
     }
     .step:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(90,60,30,.1); }
     .step-icon { font-size: 2.2rem; margin-bottom: .8rem; }
-    .step h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1rem; color: var(--brown-dk);
-      margin-bottom: .4rem;
-    }
-    .step p { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+    .step h3 { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--brown-dk); margin-bottom: .4rem; }
+    .step p  { font-size: .88rem; color: var(--muted); line-height: 1.6; }
 
-    /* ── FEATURES ── */
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1.2rem; margin-top: 2.5rem;
-    }
+    /* ── Особливості ── */
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-top: 2.5rem; }
     .feature {
       display: flex; gap: 1rem; align-items: flex-start;
-      background: var(--card);
-      border: 1px solid var(--border);
+      background: var(--card); border: 1px solid var(--border);
       border-radius: 14px; padding: 1.2rem;
     }
     .feature-icon {
@@ -228,72 +182,59 @@
       background: var(--bg); width: 48px; height: 48px;
       border-radius: 12px; display: flex; align-items: center; justify-content: center;
     }
-    .feature h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: .95rem; color: var(--brown-dk);
-      margin-bottom: .2rem;
-    }
-    .feature p { font-size: .82rem; color: var(--muted); line-height: 1.5; }
+    .feature h3 { font-family: 'Playfair Display', serif; font-size: .95rem; color: var(--brown-dk); margin-bottom: .2rem; }
+    .feature p  { font-size: .82rem; color: var(--muted); line-height: 1.5; }
 
     /* ── CTA ── */
-    #cta {
-      background: var(--brown-dk);
-      text-align: center; color: #fff;
-    }
-    #cta .section-label { color: var(--accent2); }
-    #cta .section-title { color: #fff; }
-    #cta .section-desc  { color: rgba(255,255,255,.7); margin: 0 auto 2rem; }
-    #cta .btn-primary   { background: var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+    #cta { background: var(--brown-dk); text-align: center; color: #fff; }
+    #cta .section-label  { color: var(--accent2); }
+    #cta .section-title  { color: #fff; }
+    #cta .section-desc   { color: rgba(255,255,255,.7); margin: 0 auto 2rem; }
+    #cta .btn-primary    { background: var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,.3); }
     #cta .btn-primary:hover { background: var(--accent2); }
-    #cta .ornament-line { background: var(--accent2); }
+    #cta .ornament-line  { background: var(--accent2); margin: 1rem auto 1.5rem; }
 
-    /* ── CONTACT ── */
+    /* ── Контакти ── */
     #contact { background: var(--card); }
     .contact-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 20px; padding: 2rem;
-      max-width: 500px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem; max-width: 500px;
     }
-    .contact-card p { font-size: .95rem; line-height: 1.8; color: var(--text); }
+    .contact-card p { font-size: .95rem; line-height: 1.8; color: var(--text); margin-bottom: 1rem; }
+    .contact-card p:last-child { margin-bottom: 0; }
     .contact-card a { color: var(--accent); text-decoration: none; }
     .contact-card a:hover { text-decoration: underline; }
 
-    /* ── FOOTER ── */
+    /* ── Футер ── */
     footer {
-      background: var(--brown-dk);
-      color: rgba(255,255,255,.6);
-      text-align: center;
-      padding: 2rem 1rem;
-      font-size: .82rem;
+      background: var(--brown-dk); color: rgba(255,255,255,.6);
+      text-align: center; padding: 2rem 1rem; font-size: .82rem;
     }
     footer a { color: var(--accent2); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
-    footer .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: .8rem; flex-wrap: wrap; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: .8rem; flex-wrap: wrap; }
 
-    /* ── RESPONSIVE ── */
+    /* ── Адаптив ── */
     @media (max-width: 600px) {
       nav { padding: .6rem 1rem; }
       .nav-links { display: none; }
       .hero { padding: 3rem 1rem 2rem; }
     }
 
-    /* ── ANIMATION ── */
+    /* ── Анімації ── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .hero h1, .hero-sub, .hero-btns, .phone-mockup {
-      animation: fadeUp .7s ease both;
-    }
-    .hero-sub    { animation-delay: .15s; }
-    .hero-btns   { animation-delay: .28s; }
-    .phone-mockup{ animation-delay: .4s; }
+    .hero h1       { animation: fadeUp .7s ease both; }
+    .hero-sub      { animation: fadeUp .7s .15s ease both; }
+    .hero-btns     { animation: fadeUp .7s .28s ease both; }
+    .phone-mockup  { animation: fadeUp .7s .4s ease both; }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- Навігація -->
 <nav>
   <a class="nav-logo" href="#">СЛОВОСВІТ</a>
   <ul class="nav-links">
@@ -304,37 +245,28 @@
   <a class="nav-play" href="./game.html">▶ Грати</a>
 </nav>
 
-<!-- HERO -->
+<!-- Герой -->
 <section class="hero">
   <div class="hero-ornament">✦ ✦ ✦</div>
   <h1>СЛОВОСВІТ</h1>
-  <p class="hero-sub">
-    Грай словами.<br>Думай українською.
-  </p>
+  <p class="hero-sub">Грай словами.<br>Думай українською.</p>
   <div class="hero-btns">
-    <a class="btn-primary" href="./game.html">
-▶ Грати безкоштовно
-</a>
+    <a class="btn-primary" href="./game.html">▶ Грати безкоштовно</a>
     <a class="btn-ghost" href="#how">Як грати?</a>
   </div>
-
-  <!-- Phone mockup with animated grid -->
   <div class="phone-mockup">
     <div class="phone-bar">СЛОВОСВІТ · Рівень 1</div>
-    <div class="phone-screen" id="demoGrid">
-      <!-- filled by JS -->
-    </div>
+    <div class="phone-screen" id="demoGrid"></div>
   </div>
 </section>
 
-<!-- HOW TO PLAY -->
+<!-- Як грати -->
 <section id="how">
   <div class="section-inner">
     <div class="section-label">Правила</div>
     <h2 class="section-title">Як грати</h2>
     <div class="ornament-line"></div>
     <p class="section-desc">Знайди всі зашифровані слова на ігровому полі — веди пальцем або мишею по літерах.</p>
-
     <div class="steps">
       <div class="step">
         <div class="step-icon">👀</div>
@@ -360,13 +292,12 @@
   </div>
 </section>
 
-<!-- FEATURES -->
+<!-- Особливості -->
 <section id="features">
   <div class="section-inner">
     <div class="section-label">Особливості</div>
     <h2 class="section-title">Чому СЛОВОСВІТ?</h2>
     <div class="ornament-line"></div>
-
     <div class="features">
       <div class="feature">
         <div class="feature-icon">🇺🇦</div>
@@ -419,70 +350,56 @@
   <div class="section-inner">
     <div class="section-label">Починай зараз</div>
     <h2 class="section-title">Готовий зіграти?</h2>
-    <div class="ornament-line" style="margin: 1rem auto 1.5rem;"></div>
+    <div class="ornament-line"></div>
     <p class="section-desc">Безкоштовно, без реєстрації, прямо в браузері.</p>
-    <a class="btn-primary" href="./game.html">
-▶ Грати безкоштовно
-</a>
+    <a class="btn-primary" href="./game.html">▶ Грати безкоштовно</a>
   </div>
 </section>
 
-<!-- CONTACT -->
+<!-- Контакти -->
 <section id="contact">
   <div class="section-inner">
-    <div class="section-label">Зв'язок</div>
+    <div class="section-label">Звʼязок</div>
     <h2 class="section-title">Контакти</h2>
     <div class="ornament-line"></div>
     <p class="section-desc" style="margin-bottom:1.5rem">Маєш питання, пропозицію або знайшов помилку? Пиши — відповімо!</p>
-
     <div class="contact-card">
-      <p>📧 Email: <a href="mailto:slovograislovograi@gmail.com">slovograislovograi@gmail.com</a></p>
-      <br>
+      <p>📧 Email: <a href="mailto:slovograi@gmail.com">slovograi@gmail.com</a></p>
       <p>🐛 Знайшов помилку в грі? Опиши що сталось і на якому рівні — виправимо якнайшвидше.</p>
-      <br>
       <p>💡 Є ідея для нового режиму чи функції? Ми відкриті до пропозицій!</p>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- Футер -->
 <footer>
   <div class="footer-links">
     <a href="./game.html">Грати</a>
     <a href="privacy.html">Політика конфіденційності</a>
-    <a href="mailto:slovograislovograi@gmail.com">Контакти</a>
+    <a href="mailto:slovograi@gmail.com">Контакти</a>
   </div>
   <div>© 2025 СЛОВОСВІТ. Всі права захищені.</div>
 </footer>
 
 <script>
-  // Animate demo grid
+  // Демо-сітка у герої
   const letters = ['С','Л','О','В','О','С','В','І','Т','У','М','А','Р','К','Е','Т','Г','Р','А','Й','Н','Е','Б','О','Д'];
   const grid = document.getElementById('demoGrid');
-  letters.forEach((l, i) => {
+  letters.forEach(l => {
     const c = document.createElement('div');
     c.className = 'cell';
     c.textContent = l;
     grid.appendChild(c);
   });
 
-  // Animate a word path: С-Л-О-В-О (indices 0,1,2,3,4)
-  const paths = [
-    [0,1,2,3,4],
-    [5,6,7,8,9],
-    [10,11,12,13,14],
-  ];
-  let pathIdx = 0;
-  let step = 0;
-  let currentLit = [];
+  const paths = [[0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14]];
+  let pathIdx = 0, step = 0, currentLit = [];
 
   function animatePath() {
     const cells = grid.querySelectorAll('.cell');
-    // clear lit
     currentLit.forEach(i => {
-      if (!paths[pathIdx].slice(0, step).includes(i)) {
+      if (!paths[pathIdx].slice(0, step).includes(i))
         cells[i].classList.remove('lit');
-      }
     });
 
     const path = paths[pathIdx];
@@ -492,7 +409,6 @@
       step++;
       setTimeout(animatePath, 350);
     } else {
-      // mark done
       setTimeout(() => {
         path.forEach(i => {
           cells[i].classList.remove('lit');
@@ -501,16 +417,12 @@
         currentLit = [];
         step = 0;
         pathIdx = (pathIdx + 1) % paths.length;
-        // reset done after pause
-        setTimeout(() => {
-          path.forEach(i => cells[i].classList.remove('done'));
-          setTimeout(animatePath, 400);
-        }, 1200);
-      }, 400);
+        setTimeout(animatePath, 900);
+      }, 600);
     }
   }
 
-  setTimeout(animatePath, 1000);
+  setTimeout(animatePath, 800);
 </script>
 
 </body>
