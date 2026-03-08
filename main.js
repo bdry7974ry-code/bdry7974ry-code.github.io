@@ -474,23 +474,86 @@ document.addEventListener('DOMContentLoaded', () => {
   let bgmStarted = false;
 
   const bgm = el('bgm');
-  const PLAYLIST = ['./assets/bgm1.mp3','./assets/bgm2.mp3','./assets/bgm3.mp3','./assets/bgm4.mp3','./assets/bgm5.mp3','./assets/bgm6.mp3','./assets/bgm7.mp3'];
-  let trackIndex = 0;
+  const PLAYLIST = [
+    './assets/bgm1.mp3','./assets/bgm2.mp3','./assets/bgm3.mp3',
+    './assets/bgm4.mp3','./assets/bgm5.mp3','./assets/bgm6.mp3','./assets/bgm7.mp3'
+  ];
+  const TRACK_KEY = 'slovograi.trackIndex';
 
-  function loadTrack(i) {
-    if (!bgm) return;
-    trackIndex = (i + PLAYLIST.length) % PLAYLIST.length;
-    bgm.src = PLAYLIST[trackIndex];
-    bgm.load();
+  // Shuffle-порядок без повторів підряд
+  function buildShuffledOrder() {
+    const arr = PLAYLIST.map((_, i) => i);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
-  loadTrack(0);
 
-  bgm?.addEventListener('ended', () => {
-    if (!isMusicOwner()) return;
-    loadTrack(trackIndex + 1);
-    bgm.currentTime = 0;
-    bgm.play()?.catch(() => {});
-  });
+  let shuffleOrder = buildShuffledOrder();
+  let shufflePos = Number(localStorage.getItem(TRACK_KEY) || 0) % PLAYLIST.length;
+
+  // Другий аудіо-елемент для crossfade
+  const bgm2 = document.createElement('audio');
+  bgm2.preload = 'auto';
+  document.body.appendChild(bgm2);
+
+  let activeBgm = bgm;   // який зараз грає
+  let nextBgm   = bgm2;  // який готується
+
+  function currentTrackSrc() {
+    return PLAYLIST[shuffleOrder[shufflePos]];
+  }
+
+  function advanceTrack() {
+    shufflePos = (shufflePos + 1) % PLAYLIST.length;
+    // Якщо пройшли весь список — перемішати знову
+    if (shufflePos === 0) shuffleOrder = buildShuffledOrder();
+    localStorage.setItem(TRACK_KEY, String(shufflePos));
+  }
+
+  function crossfadeTo(src, targetVol) {
+    nextBgm.src = src;
+    nextBgm.volume = 0;
+    nextBgm.load();
+    nextBgm.play()?.catch(() => {});
+
+    const duration = 2000;
+    const start = performance.now();
+    const fadeOut = activeBgm;
+    const fadeIn  = nextBgm;
+    const startVol = fadeOut.volume;
+
+    const step = now => {
+      const p = Math.min((now - start) / duration, 1);
+      fadeOut.volume = startVol * (1 - p);
+      fadeIn.volume  = p * targetVol;
+      if (p < 1) {
+        requestAnimationFrame(step);
+      } else {
+        fadeOut.pause();
+        fadeOut.src = '';
+        // міняємо ролі
+        activeBgm = fadeIn;
+        nextBgm   = fadeOut;
+      }
+    };
+    requestAnimationFrame(step);
+  }
+
+  // Коли трек закінчився — crossfade до наступного
+  function onTrackEnded() {
+    if (!isMusicOwner() || !musicEnabled) return;
+    advanceTrack();
+    crossfadeTo(currentTrackSrc(), musicVolume);
+  }
+
+  bgm.addEventListener('ended',  onTrackEnded);
+  bgm2.addEventListener('ended', onTrackEnded);
+
+  // Стартуємо з того треку де зупинились
+  bgm.src = currentTrackSrc();
+  bgm.load();
 
   function playTone(freq = 440, dur = 0.12, vol = 0.15) {
     if (!uiSoundEnabled) return;
@@ -519,14 +582,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => playTone(784, 0.22, 0.22), 240);
   };
 
-  function fadeInBgm(targetVol = 0.14, duration = 2800) {
+    function fadeInBgm(targetVol = 0.14, duration = 2800) {
     if (!bgm) return;
-    bgm.volume = 0.0001;
-    bgm.play()?.then(() => {
+    activeBgm.volume = 0.0001;
+    activeBgm.play()?.then(() => {
       const start = performance.now();
       const step = now => {
         const p = Math.min((now - start) / duration, 1);
-        bgm.volume = p * p * targetVol;
+        activeBgm.volume = p * p * targetVol;
         if (p < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
@@ -535,8 +598,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function applySoundState() {
     if (!bgm) return;
-    if (!musicEnabled) { bgm.pause(); return; }
-    if (!bgm.paused) return;
+    if (!musicEnabled) { activeBgm.pause(); return; }
+    if (!activeBgm.paused) return;
     fadeInBgm(musicVolume, 1200);
   }
 
@@ -556,7 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function setMusicVolume(v) {
     musicVolume = Math.max(0, Math.min(1, Number(v)));
     localStorage.setItem('slovograi.musicVolume', musicVolume);
-    if (bgm) bgm.volume = musicVolume;
+    if (activeBgm) activeBgm.volume = musicVolume;
   }
 
   function setUiVolume(v) {
@@ -588,34 +651,32 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('storage', e => { if (e.key === TAB_KEY) applySoundState(); });
   window.addEventListener('beforeunload', () => { if (isMusicOwner()) localStorage.removeItem(TAB_KEY); });
   document.addEventListener('visibilitychange', () => {
-    if (!bgm) return;
-    if (document.hidden) bgm.pause();
-    else if (musicEnabled && bgmStarted && isMusicOwner()) bgm.play()?.catch(() => {});
+    if (!activeBgm) return;
+    if (document.hidden) activeBgm.pause();
+    else if (musicEnabled && bgmStarted && isMusicOwner()) activeBgm.play()?.catch(() => {});
   });
 
   // ── Start ────────────────────────────────────────────────
   el('startGameBtn').onclick = async () => {
-    const savedLevel = Number(localStorage.getItem(CURRENT_LEVEL_KEY));
-    const savedState = localStorage.getItem(LEVEL_STATE_KEY);
-    if (savedLevel > 0) {
-      setLevelNumber(savedLevel);
-      if (savedState) {
-        try {
-          const data = JSON.parse(savedState);
-          if (typeof data.timeLeft === 'number') timeLeft = data.timeLeft;
-          if (typeof data.coins === 'number') setCoins(data.coins);
-        } catch {}
-      }
-    } else setLevelNumber(1);
-
     goGame();
     bgmStarted = true;
     claimMusicOwner();
-    if (isMusicOwner()) { if (!bgm.src) loadTrack(0); applySoundState(); }
+    if (isMusicOwner()) applySoundState();
 
+    // Відновити стан таймера/монет якщо є збережений
+    const savedState = localStorage.getItem(LEVEL_STATE_KEY);
+    if (savedState) {
+      try {
+        const data = JSON.parse(savedState);
+        if (typeof data.timeLeft === 'number') timeLeft = data.timeLeft;
+        if (typeof data.coins === 'number') setCoins(data.coins);
+      } catch {}
+    }
+
+    // initLevels сам читає LEVEL_KEY і будує правильний рівень
     const { initLevels } = await import('./level.js');
     await initLevels();
-    if (!Number(localStorage.getItem(CURRENT_LEVEL_KEY))) setLevelNumber(1);
+
     refreshLevelUI();
     rebuildGame({ withDropdowns: true });
   };

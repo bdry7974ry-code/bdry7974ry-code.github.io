@@ -171,7 +171,6 @@ export function setLevelNumber(n) {
   levelNumber = nn;
   localStorage.setItem(LEVEL_KEY, String(nn));
   if (loaded) { level = buildLevel(nn); window.level = level; }
-  else initLevels();
   return levelNumber;
 }
 
