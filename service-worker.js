@@ -1,8 +1,9 @@
-const CACHE_NAME = 'slovograi-v12';
+const CACHE_NAME = 'slovograi-v13';
 
 const ASSETS = [
   './',
   './index.html',
+  './game.html',
   './style.css',
   './main.js',
   './level.js',
