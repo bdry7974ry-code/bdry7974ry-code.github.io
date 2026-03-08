@@ -818,11 +818,11 @@ header.panel {
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: transparent;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 24px;
+  padding-top: 0;
   z-index: 1000;
 }
 

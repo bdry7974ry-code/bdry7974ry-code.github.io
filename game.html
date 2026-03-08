@@ -105,19 +105,7 @@
               <li><button id="shopBtn" class="btn">Магазин</button></li>
             </ul>
 
-            <div id="shopModal" class="shop-pop hidden">
-              <div class="shop-pop-card">
-                <h3>Гаманець</h3>
-                <div class="shop-list">
-                  <button type="button" class="btn shop-pack" data-coins="100">+100 💰</button>
-                  <button type="button" class="btn shop-pack" data-coins="500">+500 💰</button>
-                  <button type="button" class="btn shop-pack" data-coins="1000">+1000 💰</button>
-                </div>
-                <div class="modal-actions">
-                  <button id="closeShopBtn" type="button" class="exit-btn">Вийти</button>
-                </div>
-              </div>
-            </div>
+            
           </div>
         </div>
 
@@ -195,6 +183,20 @@
   </section>
 
 </main>
+
+<div id="shopModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <h3>Гаманець</h3>
+    <div class="shop-list">
+      <button type="button" class="btn shop-pack" data-coins="100">+100 💰</button>
+      <button type="button" class="btn shop-pack" data-coins="500">+500 💰</button>
+      <button type="button" class="btn shop-pack" data-coins="1000">+1000 💰</button>
+    </div>
+    <div class="modal-actions">
+      <button id="closeShopBtn" type="button" class="exit-btn">Назад</button>
+    </div>
+  </div>
+</div>
 
 <audio id="bgm" preload="auto"></audio>
 <script type="module" src="./main.js"></script>

@@ -335,7 +335,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const coinsBtn = coinsMenu?.querySelector('.coins-btn');
     const shopModal = el('shopModal');
 
-    el('shopBtn')?.addEventListener('click', e => { e.stopPropagation(); shopModal?.classList.toggle('hidden'); });
+   el('shopBtn')?.addEventListener('click', e => {
+  e.stopPropagation();
+  document.querySelector('.coins-menu')?.classList.remove('open');
+  shopModal?.classList.remove('hidden');
+});
 
     function closeAll() {
       topLeft?.classList.remove('open');
