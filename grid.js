@@ -26,6 +26,8 @@ export async function createGrid() {
   const size = Math.min(availW, availH) - padding * 2;
 
   const cellSize = Math.floor(size / cols);
+  const fontSize = Math.max(12, Math.floor(cellSize * 0.45));
+gridEl.style.fontSize = `${fontSize}px`;
 
 
 

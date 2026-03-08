@@ -118,7 +118,8 @@ function buildLevel(n) {
   const minLen = minLenForLevel(safeN);
 
   const genLevel = safeN > 100 ? 100 : Math.max(1, safeN);
-
+  
+const genCols = size;
 const gen = generateLevel({
   cols: size,
   rows: size,
@@ -198,8 +199,7 @@ usedLen.add(word);
 return word;
   });
 
-
-  lvl.grid = gen.grid.slice();
+lvl.grid = gen.grid.slice();
   if (lvl.grid.length !== size * size) {
     throw new Error('❌ Grid size mismatch');
   }
@@ -236,9 +236,8 @@ return word;
 
   lvl.number = n;
   lvl.size = size;
-  lvl.cols = size;
+  lvl.cols = genCols;
   lvl.rows = size;
-
 
   LAST_LEVEL_WORDS = new Set(lvl.targets.map(t => t.word));
   RECENT_WORDS.push(...lvl.targets.map(t => t.word));

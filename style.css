@@ -160,8 +160,9 @@ button:active {
     flex: 0 0 auto;
   }
 
-  .game-card {
-    flex: 1 1 auto;
+ .game-card {
+    flex: 1 1 0;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -490,7 +491,7 @@ header.panel {
 
 .cell {
   aspect-ratio: 1 / 1;
-  border-radius: 14px;
+  border-radius: 20px;
   background: #efe4cf;
   display: flex;
   align-items: center;
@@ -502,6 +503,7 @@ header.panel {
   -webkit-user-select: none;
   touch-action: none;
 }
+
 
 
 .cell.active,
@@ -1397,6 +1399,45 @@ text-decoration:none;
 color:#4e3620;
 font-weight:600;
 }
-.app{
-padding-top:50px;
+
+/* ── Word input display ── */
+#wordInputDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+  pointer-events: none;
+  min-height: 44px;
+  flex-shrink: 0;
+  padding: 0 8px;
+  overflow: hidden;
+}
+
+#wordInputDisplay:empty {
+  min-height: 44px;
+}
+
+#wordInputDisplay .wletter {
+  font-family: var(--font-serif);
+  font-size: clamp(16px, 4vw, 26px);
+  font-weight: 800;
+  color: #b8860b;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+@media (max-width: 520px) {
+  #wordInputDisplay .wletter {
+    font-size: clamp(20px, 6vw, 34px);
+  }
+}
+
+#wordInputDisplay .wletter-new {
+  animation: wletterPop 0.2s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+@keyframes wletterPop {
+  0%   { opacity: 0; transform: scale(0.3); }
+  60%  { transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
 }

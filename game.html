@@ -107,7 +107,7 @@
               <ul class="dropdown">
 
 <li><button id="continueGameBtnCoins" class="btn">▶ Продовжити гру</button></li>
-
+<li><button id="toggleWordDisplayBtn" class="btn">💬 Слово на екрані ✓</button></li>
 <li><button id="hintBtn" class="btn">Підказка 1 літера - 40💰</button></li>
 
 <li><button id="hintWordBtn" class="btn">Підказка слово - 100💰</button></li>
@@ -159,14 +159,7 @@
 
 
         <div id="bonusWordNotice" class="bonus-word-notice"></div>
-        <div class="goal-ornament" aria-hidden="true">
-          <div class="goal-ornament__track">
-            ✦ ✦ ✦
-            <span class="sep" id="gridSep">•</span>
-            ✦ ✦ ✦
-          </div>
-        </div>
-
+        <div id="wordInputDisplay"></div>
         <div class="game-card">
           <div id="grid" class="grid"></div>
         </div>
@@ -177,7 +170,7 @@
         </div>
 
 
-      
+        
         <div class="ad-space">
           <div class="ticker">
             <div class="ticker__track" id="adTickerTrack">

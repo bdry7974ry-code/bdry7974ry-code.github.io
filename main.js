@@ -1,5 +1,15 @@
 import { createGrid } from './grid.js';
-import { bindEvents, bindGridDrag, resetForNewLevel, showBonusWordNotice, getCoins, setCoins, addCoins } from './logic.js';
+import { 
+  bindEvents,
+  bindGridDrag,
+  resetForNewLevel,
+  showBonusWordNotice,
+  getCoins,
+  setCoins,
+  addCoins,
+  clearCurrentSelection,
+  setWordDisplayEnabled
+} from './logic.js';
 import { nextLevel, reloadLevel, setLevelNumber, levelNumber, level } from './level.js';
 
 
@@ -54,6 +64,29 @@ if (isIOS && !isStandalone) {
   const retryLevelBtn = document.getElementById('retryLevelBtn');
   const continueGameBtn = document.getElementById('continueGameBtn');
   const continueGameBtnCoins = document.getElementById('continueGameBtnCoins');
+  const WORD_DISPLAY_KEY = 'slovograi.wordDisplay';
+let wordDisplayEnabled = localStorage.getItem(WORD_DISPLAY_KEY);
+
+if (wordDisplayEnabled === null) {
+  wordDisplayEnabled = true;
+} else {
+  wordDisplayEnabled = wordDisplayEnabled === 'true';
+}
+
+setWordDisplayEnabled(wordDisplayEnabled);
+  const toggleWordBtn = document.getElementById('toggleWordDisplayBtn');
+  toggleWordBtn.textContent = wordDisplayEnabled
+  ? '💬 Показ слова ✓'
+  : '💬 Показ слова ✗'
+  toggleWordBtn?.addEventListener('pointerup', () => {
+    wordDisplayEnabled = !wordDisplayEnabled;
+    toggleWordBtn.textContent = wordDisplayEnabled ? '💬 Показ слова ✓' : '💬 Показ слова ✗';
+    setWordDisplayEnabled(wordDisplayEnabled);
+    localStorage.setItem(WORD_DISPLAY_KEY, wordDisplayEnabled);
+    const topRight = document.querySelector('.top-right');
+    topRight?.classList.remove('open');
+   
+  });
 
 continueGameBtnCoins?.addEventListener('click', () => {
 
@@ -82,10 +115,8 @@ const openSettingsFromGameBtn = document.getElementById('openSettingsFromGameBtn
   });
 
   retryLevelBtn?.addEventListener('pointerup', async () => {
-    const { setLevelNumber } = await import('./level.js');
-
-    setLevelNumber(levelNumber);
-    localStorage.setItem(CURRENT_LEVEL_KEY, levelNumber);
+    const { reloadLevel } = await import('./level.js');
+    await reloadLevel();
     goGame();
     rebuildGame({ withDropdowns: false });
   });
@@ -122,9 +153,8 @@ const openSettingsFromGameBtn = document.getElementById('openSettingsFromGameBtn
   });
 
   resultRetryBtn?.addEventListener('pointerup', async () => {
-    const { setLevelNumber } = await import('./level.js');
-
-    setLevelNumber(levelNumber);
+    const { reloadLevel } = await import('./level.js');
+    await reloadLevel();
     goGame();
     rebuildGame({ withDropdowns: true });
   });
@@ -230,6 +260,7 @@ const openSettingsFromGameBtn = document.getElementById('openSettingsFromGameBtn
   }
 
 }
+
 
   function rebuildGame({ withDropdowns = true } = {}) {
     resetForNewLevel();

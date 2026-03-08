@@ -211,6 +211,51 @@ function isContiguousPath(size, seq) {
 function clearSelection() {
   selection = [];
   document.querySelectorAll('.cell.active').forEach(c => c.classList.remove('active'));
+  updateWordDisplay([]);
+}
+export function clearCurrentSelection() {
+  clearSelection();
+}
+
+function updateWordDisplay(letters) {
+
+  if (!wordDisplayOn) return;
+
+  const el = document.getElementById('wordInputDisplay');
+  if (!el) return;
+  if (!letters.length) { el.innerHTML = ''; return; }
+
+  const current = el.querySelectorAll('.wletter');
+  const newCount = letters.length;
+
+  // Якщо менше букв ніж було — скидаємо все
+  if (newCount < current.length) {
+    el.innerHTML = '';
+    letters.slice(0, 14).forEach(l => {
+      const span = document.createElement('span');
+      span.className = 'wletter';
+      span.textContent = l;
+      el.appendChild(span);
+    });
+    return;
+  }
+
+  // Додаємо тільки нову букву з анімацією
+  if (newCount <= 14) {
+    const span = document.createElement('span');
+    span.className = 'wletter wletter-new';
+    span.textContent = letters[newCount - 1];
+    el.appendChild(span);
+    setTimeout(() => span.classList.remove('wletter-new'), 200);
+  }
+}
+let wordDisplayOn = true;
+export function setWordDisplayEnabled(val) {
+  wordDisplayOn = val;
+  if (!val) {
+    const el = document.getElementById('wordInputDisplay');
+    if (el) el.innerHTML = '';
+  }
 }
 
 export function resetForNewLevel() {
@@ -281,6 +326,11 @@ export async function onCellClick(cell, index) {
     const c = document.querySelectorAll('.cell')[i];
     return c ? c.textContent : "";
   }).join("");
+  
+  updateWordDisplay(selection.map(i => {
+    const c = document.querySelectorAll('.cell')[i];
+    return c ? c.textContent : '';
+  }));
 
 
   const sel = JSON.stringify(selection);
@@ -412,6 +462,7 @@ function startSelection(index) {
   selection.push(index);
   const el = getCellEl(index);
   if (el) el.classList.add('active');
+  updateWordDisplay([getCellEl(index)?.textContent || '']);
 }
 
 function extendSelection(index) {
@@ -423,6 +474,7 @@ function extendSelection(index) {
     const removed = selection.pop();
     const el = getCellEl(removed);
     if (el) el.classList.remove('active');
+    updateWordDisplay(selection.map(i => getCellEl(i)?.textContent || ''));
     return;
   }
 
@@ -435,6 +487,7 @@ function extendSelection(index) {
   selection.push(index);
   const el = getCellEl(index);
   if (el) el.classList.add('active');
+  updateWordDisplay(selection.map(i => getCellEl(i)?.textContent || ''));
 }
 
 async function finishSelection() {
@@ -454,6 +507,10 @@ async function finishSelection() {
     const c = getCellEl(i);
     return c ? c.textContent : "";
   }).join("");
+  updateWordDisplay(selection.map(i => {
+    const c = getCellEl(i);
+    return c ? c.textContent : '';
+  }));
 
   const sel = selection;
   const selRev = [...selection].reverse();
