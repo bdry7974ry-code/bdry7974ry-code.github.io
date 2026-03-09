@@ -1,4 +1,4 @@
-const CACHE_NAME = 'slovograi-v15';
+const CACHE_NAME = 'slovograi-v16';
 
 const ASSETS = [
   './',
