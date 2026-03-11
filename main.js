@@ -166,7 +166,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   el('openSettingsFromGameBtn')?.addEventListener('click', () => {
     document.querySelector('.top-left')?.classList.remove('open');
-    el('settingsModal')?.classList.remove('hidden');
+    showScreen('menu');
+    openSettingsModal();
   });
 
   el('resultMenuBtn')?.addEventListener('click', () => showScreen('menu'));
@@ -202,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   el('levelsBtn')?.addEventListener('click', () => {
     if (!DEV_LEVEL_WHEEL) return;
+    settingsModal?.classList.add('hidden');
     levelWheelModal?.classList.remove('hidden');
     renderLevelWheel();
   });
@@ -255,31 +257,41 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!DEV_LEVEL_WHEEL || !levelWheelEl) return;
     levelWheelEl.innerHTML = '';
     wheelEnd = 0;
-    addWheelButtons(1, 50);
+
+    // Рендеримо до maxLevel + 1 (наступний доступний), мінімум 50
+    const initialEnd = Math.max(50, getMaxLevel() + 1);
+    addWheelButtons(1, Math.min(999, initialEnd));
 
     levelWheelEl.onwheel = e => { e.preventDefault(); levelWheelEl.scrollLeft += e.deltaY; };
 
     if (wheelScrollHandler) levelWheelEl.removeEventListener('scroll', wheelScrollHandler);
-    let wheelInitialized = false;
 
     wheelScrollHandler = () => {
-      if (!wheelInitialized || levelWheelModal?.classList.contains('hidden') || wheelEnd >= 999) return;
+      if (levelWheelModal?.classList.contains('hidden') || wheelEnd >= 999) return;
       const allBtns = levelWheelEl.querySelectorAll('button');
       const lastBtn = allBtns[allBtns.length - 1];
       if (!lastBtn) return;
-      if (lastBtn.offsetLeft + lastBtn.offsetWidth - (levelWheelEl.scrollLeft + levelWheelEl.clientWidth) < lastBtn.offsetWidth * 5)
+      if (lastBtn.offsetLeft + lastBtn.offsetWidth - (levelWheelEl.scrollLeft + levelWheelEl.clientWidth) < lastBtn.offsetWidth * 15)
         addWheelButtons(wheelEnd + 1, Math.min(999, wheelEnd + 50));
     };
 
     levelWheelEl.addEventListener('scroll', wheelScrollHandler);
 
-    if (levelNumber > wheelEnd) addWheelButtons(wheelEnd + 1, Math.min(999, Math.ceil(levelNumber / 50) * 50));
-
-    const currentBtn = [...levelWheelEl.querySelectorAll('button')].find(b => Number(b.dataset.level) === levelNumber);
-    if (currentBtn) setTimeout(() => {
-      levelWheelEl.scrollLeft = Math.max(0, currentBtn.offsetLeft - levelWheelEl.clientWidth / 2 + currentBtn.offsetWidth / 2);
-      wheelInitialized = true;
-    }, 150);
+    // Чекаємо поки DOM відмалює кнопки, тоді скролимо до поточного рівня
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const currentBtn = [...levelWheelEl.querySelectorAll('button')].find(b => Number(b.dataset.level) === levelNumber);
+      if (currentBtn) {
+        // Вимикаємо smooth scroll щоб позиція була точна
+        levelWheelEl.style.scrollBehavior = 'auto';
+        // getBoundingClientRect точніший ніж offsetLeft бо враховує transform:scale
+        const wheelRect = levelWheelEl.getBoundingClientRect();
+        const btnRect = currentBtn.getBoundingClientRect();
+        const btnCenter = levelWheelEl.scrollLeft + btnRect.left - wheelRect.left + btnRect.width / 2;
+        levelWheelEl.scrollLeft = btnCenter - levelWheelEl.clientWidth / 2;
+        // Повертаємо smooth scroll після позиціонування
+        setTimeout(() => { levelWheelEl.style.scrollBehavior = ''; }, 100);
+      }
+    }));
   }
 
   // ── Level UI ─────────────────────────────────────────────
@@ -380,6 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   el('settingsBtn')?.addEventListener('click', openSettingsModal);
   el('closeSettingsBtn')?.addEventListener('click', () => { closeSettingsModal(); showScreen('menu'); });
+  el('continueFromSettingsBtn')?.addEventListener('click', () => { closeSettingsModal(); continueGame(); });
   el('howToPlayBtn')?.addEventListener('click', () => { closeSettingsModal(); el('howToPlayModal')?.classList.remove('hidden'); });
   el('closeHowToPlayBtn')?.addEventListener('click', handleBackToSettings);
   el('soundMenuBtn')?.addEventListener('click', () => { settingsModal?.classList.add('hidden'); el('soundModal')?.classList.remove('hidden'); });
@@ -432,6 +445,10 @@ document.addEventListener('DOMContentLoaded', () => {
   el('resetProgressBtn')?.addEventListener('click', () => {
     if (!confirm('Скинути прогрес? Це видалить рівні, монети та імʼя.')) return;
     BACKUP_KEYS.forEach(k => localStorage.removeItem(k));
+    localStorage.removeItem('slovograi.usedByLen');
+    localStorage.removeItem('slovograi.levelState');
+    localStorage.setItem('slovograi.currentLevel', '1');
+    localStorage.setItem('slovograi.maxLevel', '3');
     setLevelNumber(1);
     setCoins(200);
     closeSettingsModal();
