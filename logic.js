@@ -188,8 +188,6 @@ let foundTargetsCount = 0;
 let goalHideT = null; 
 let paidHintTargetId = null; 
 let hintTimeout = null;
-let hintLock = false;
-let lastHintType = null; 
 
 
 function areNeighbors(cols, a, b) {
@@ -591,16 +589,6 @@ function getNextUnsolvedTarget() {
 }
 
 export function bindEvents() {
-  const restartBtn = document.getElementById('restartBtn');
-  restartBtn && (restartBtn.onclick = () => {
-    clearSelection();
-    document.querySelectorAll('.cell').forEach(c => {
-      c.classList.remove('active');
-      c.classList.remove('locked');
-      c.style.background = '';
-    });
-  });
-
   const hintBtn = document.getElementById('hintBtn');
   const hintWordBtn = document.getElementById('hintWordBtn');
 

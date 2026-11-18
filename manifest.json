@@ -1,7 +1,7 @@
 {
-  "name": "Словограй",
-  "short_name": "Словограй",
-  "start_url": "./",
+  "name": "Словосвіт",
+  "short_name": "Словосвіт",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#111111",
   "theme_color": "#111111",

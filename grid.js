@@ -1,38 +1,28 @@
 import { level } from './level.js';
 
-export async function createGrid() {
-
+export function createGrid() {
   const gridEl = document.getElementById('grid');
-  if (!gridEl) return;
+if (!gridEl) return;
 
   if (!level || !level.grid) {
-    return;
+      return;
   }
 
   gridEl.innerHTML = '';
   const cols = level.cols;
 
-  const parent = gridEl.parentElement; // .game-card
+const parent = gridEl.parentElement;
 
-  // Чекаємо реальний розмір після render
-  await new Promise(r => requestAnimationFrame(r));
-  await new Promise(r => requestAnimationFrame(r));
+const size = Math.min(
+  parent.clientWidth,
+  parent.clientHeight
+);
 
-  // Беремо розмір безпосередньо від game-card
-  const availW = parent.clientWidth;
-  const availH = parent.clientHeight;
-
-  const padding = 4;
-  const size = Math.min(availW, availH) - padding * 2;
-
-  const cellSize = Math.floor(size / cols);
-  const fontSize = Math.max(12, Math.floor(cellSize * 0.45));
-gridEl.style.fontSize = `${fontSize}px`;
+const cellSize = Math.floor(size / cols);
 
 
-
-  gridEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
-  gridEl.style.gridAutoRows = `${cellSize}px`;
+gridEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
+gridEl.style.gridAutoRows = `${cellSize}px`;
 
 
 
@@ -43,10 +33,5 @@ gridEl.style.fontSize = `${fontSize}px`;
     cell.dataset.index = String(index);
     gridEl.appendChild(cell);
   });
-
-  const targetEl = document.getElementById('target-word');
-  if (targetEl) {
-    targetEl.textContent = level.targets[0]?.word || '';
-  }
 
 }

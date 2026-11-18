@@ -11,7 +11,7 @@ const LEVEL_KEY = 'slovograi.level';
 
 let LAST_LEVEL_WORDS = new Set();
 let RECENT_WORDS = [];
-const RECENT_WORDS_LIMIT = 400; // щоб важкі не повторювались часто
+const RECENT_WORDS_LIMIT = 1200; // тримаємо довшу історію, щоб слова рідше повторювались
 
 let HARD_WORDS = [];
 let WORDS_BY_LEN = new Map();
@@ -325,11 +325,3 @@ export async function nextLevel() {
   return level;
 }
 
-export async function reloadLevel() {
-  if (!loaded) await initLevels();
-
-  level = getCachedLevelForPlay(levelNumber) || buildLevel(levelNumber);
-
-  window.level = level;
-  return level;
-}
